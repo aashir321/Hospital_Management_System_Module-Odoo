@@ -1,4 +1,4 @@
-from odoo import api, fields, models
+from odoo import api, fields, models  # pyright: ignore[reportMissingImports]
 
 class HospitalDoctors(models.Model):
     _name = 'hospital.doctors'

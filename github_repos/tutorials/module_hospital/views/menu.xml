@@ -12,4 +12,10 @@
         parent="hospital_menu_root" 
         sequence="0"/>
 
+    <menuitem id="main_appointment_menu_root" 
+        name="Appointment"
+        action="action_Hospital_Appointment" 
+        parent="hospital_menu_root" 
+        sequence="0"/>
+
 </odoo>
