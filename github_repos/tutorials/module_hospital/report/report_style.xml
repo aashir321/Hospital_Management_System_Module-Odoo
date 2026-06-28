@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Report-specific styling kept separate so the QWeb template stays maintainable. -->
+    <template id="patient_medical_report_style">
+        <t t-if="True">
+            <style type="text/css">
+                @page {
+                    size: A4;
+                    margin: 12mm 10mm;
+                }
+
+                .page.hospital-report-page {
+                    font-size: 12px;
+                    color: #243447;
+                }
+
+                .hospital-report-header {
+                    background: linear-gradient(90deg, #eff6ff 0%, #ffffff 100%);
+                    border-radius: 14px;
+                    padding: 14px 16px;
+                }
+
+                .hospital-report-logo {
+                    max-height: 72px;
+                    max-width: 100%;
+                    object-fit: contain;
+                }
+
+                .hospital-report-title {
+                    color: #114a8d;
+                    font-weight: 800;
+                    letter-spacing: 0.8px;
+                    font-size: 22px;
+                }
+
+                .hospital-report-company-name {
+                    font-weight: 700;
+                    color: #1f2d3d;
+                }
+
+                .hospital-report-meta {
+                    color: #5b6572;
+                    font-size: 11px;
+                    line-height: 1.4;
+                }
+
+                .hospital-report-badge {
+                    display: inline-block;
+                    background: #114a8d;
+                    color: #fff;
+                    border-radius: 999px;
+                    padding: 6px 12px;
+                    font-size: 11px;
+                    font-weight: 700;
+                    text-transform: uppercase;
+                    letter-spacing: 0.4px;
+                }
+
+                .hospital-section-header {
+                    background: #e9eef5 !important;
+                    color: #114a8d !important;
+                    font-weight: 700;
+                    border-bottom: 1px solid #d8e1ec !important;
+                }
+
+                .hospital-report-section {
+                    border-radius: 14px;
+                    overflow: hidden;
+                }
+
+                .hospital-info-table,
+                .hospital-table {
+                    margin-bottom: 0;
+                    border-color: #d7dee8;
+                }
+
+                .hospital-info-table th,
+                .hospital-table th {
+                    width: 28%;
+                    background: #f7f9fc;
+                    color: #334155;
+                    font-weight: 700;
+                    vertical-align: top;
+                }
+
+                .hospital-info-table td,
+                .hospital-table td {
+                    color: #1e293b;
+                }
+
+                .info-box {
+                    border: 1px solid #d7dee8;
+                    border-radius: 12px;
+                    padding: 12px 14px;
+                    background: #fff;
+                    min-height: 100%;
+                }
+
+                .info-box .label,
+                .footer-label {
+                    font-size: 11px;
+                    font-weight: 700;
+                    color: #64748b;
+                    text-transform: uppercase;
+                    letter-spacing: 0.4px;
+                    margin-bottom: 4px;
+                }
+
+                .info-box .value,
+                .footer-value {
+                    color: #1e293b;
+                    font-weight: 600;
+                    white-space: pre-wrap;
+                    word-break: break-word;
+                }
+
+                .signature-line {
+                    border-top: 1px solid #64748b;
+                    width: 70%;
+                    margin-bottom: 8px;
+                }
+
+                .signature-box {
+                    display: inline-block;
+                    border: 1px dashed #64748b;
+                    padding: 16px 24px;
+                    border-radius: 12px;
+                    color: #64748b;
+                    font-size: 11px;
+                    font-weight: 700;
+                    text-transform: uppercase;
+                }
+
+                .hospital-report-footer {
+                    font-size: 11px;
+                }
+
+                @media print {
+                    .hospital-report-title {
+                        font-size: 20px;
+                    }
+                }
+            </style>
+        </t>
+    </template>
+</odoo>

@@ -11,6 +11,10 @@
     'data': [
         'security/ir.model.access.csv',
         'views/menu.xml',
+        'views/doctor_view.xml',
+        'report/report.xml',
+        'report/patient_report.xml',
+        'report/report_style.xml',
         'views/patient_view.xml',
         'views/female_patients_view.xml',
         'views/appointment_view.xml',

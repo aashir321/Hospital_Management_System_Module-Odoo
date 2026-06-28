@@ -5,7 +5,17 @@
         <field name="model">hospital.appointment</field>
         <field name="arch" type="xml">
                 <search string="Appointment Details">
-
+                    <field name="patient_id"/>
+                    <field name="doctor_id"/>
+                    <field name="department"/>
+                    <field name="state"/>
+                    <filter name="filter_draft" string="Draft" domain="[('state','=','draft')]"/>
+                    <filter name="filter_done" string="Done" domain="[('state','=','done')]"/>
+                    <filter name="filter_cancelled" string="Cancelled" domain="[('state','=','cancelled')]"/>
+                    <group expand="0" string="Group By">
+                        <filter name="group_by_doctor" string="Doctor" context="{'group_by': 'doctor_id'}"/>
+                        <filter name="group_by_state" string="Status" context="{'group_by': 'state'}"/>
+                    </group>
                 </search>
         </field>
     </record>
@@ -13,12 +23,17 @@
     <record id="view_hospital_appointment_tree" model="ir.ui.view">
         <field name="model">hospital.appointment</field>
         <field name="arch" type="xml">
-                <tree string="Appointment Details">
+                <tree string="Appointment Details" create="0" edit="0" delete="0">
                     <field name="patient_id" widget="many2one_avatar"/>     
+                    <field name="appointment_date"/>
                     <field name="appointment_time"/>
+                    <field name="doctor_id"/>
+                    <field name="department"/>
                     <field name="Booking_date"/>
                     <field name="gender"/>
                     <field name="email"/>
+                    <field name="priority"/>
+                    <field name="state"/>
                 </tree>
         </field>
     </record>
@@ -27,22 +42,35 @@
     <record id="view_hospital_appointment_form" model="ir.ui.view">
         <field name="model">hospital.appointment</field>
         <field name="arch" type="xml">
-                <form string="Appointment Details">
+                <form string="Appointment Details" create="0" edit="0" delete="0">
+                    <header>
+                        <field name="state" widget="statusbar" nolabel="1" options="{'clickable':'1'}" statusbar_visible="draft,in_consultation,done"/>
+                    </header>
                     <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="priority" widget="priority" class="mr-3"/>
+                        </h1>
+                    </div>
                     <group>
                         <group>
                             <field name="patient_id"/>
+                            <field name="appointment_date"/>
+                            <field name="doctor_id"/>
+                            <field name="department" readonly="1"/>
                             <field name="Booking_date"/>
                             <field name="email"/>
                         </group>
                         <group>
                             <field name="appointment_time"/>
                             <field name="gender"/>
+                            <field name="priority"/>
                         </group>
                     </group>
                     <notebook>
                         <page string="Appointment Details" name ="appointments_details">
                             <group> 
+                                <field name="appointment_date"/>
                                 <field name="appointment_time"/>
                                 <field name="Booking_date"/>
                             </group>
@@ -52,6 +80,13 @@
                                 <field name="patient_id"/>
                                 <field name="gender"/>
                                 <field name="email"/>
+                            </group>
+                        </page>
+                        <page string="Clinical Notes" name="clinical_notes">
+                            <group>
+                                <field name="symptoms"/>
+                                <field name="diagnosis"/>
+                                <field name="doctor_notes"/>
                             </group>
                         </page>
                         <page string="Prescription" name ="prescription">

@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Shared header block keeps the report readable and easy to maintain. -->
+    <template id="patient_medical_report_header">
+        <div class="row align-items-center g-3 hospital-report-header mb-4">
+            <div class="col-3 text-start">
+                <t t-if="company.logo">
+                    <img t-att-src="image_data_uri(company.logo)" class="hospital-report-logo" alt="Hospital Logo"/>
+                </t>
+                <t t-elif="company.logo_web">
+                    <img t-att-src="image_data_uri(company.logo_web)" class="hospital-report-logo" alt="Hospital Logo"/>
+                </t>
+                <t t-else="">
+                    <img t-att-src="'/module_hospital/static/src/img/hospital_logo.png'" class="hospital-report-logo" alt="Hospital Logo"/>
+                </t>
+            </div>
+            <div class="col-6 text-center">
+                <div class="hospital-report-company-name"><span t-esc="company.name or 'Hospital'"/></div>
+                <div class="hospital-report-title">PATIENT MEDICAL REPORT</div>
+                <div class="hospital-report-meta">
+                    <t t-if="company.partner_id.street or company.partner_id.city or company.partner_id.zip or company.partner_id.country_id">
+                        <span t-esc="company.partner_id.street or ''"/>
+                        <t t-if="company.partner_id.street2">
+                            <span t-esc="' ' + company.partner_id.street2"/>
+                        </t>
+                        <t t-if="company.partner_id.city">
+                            <span t-esc="', ' + company.partner_id.city"/>
+                        </t>
+                        <t t-if="company.partner_id.zip">
+                            <span t-esc="' ' + company.partner_id.zip"/>
+                        </t>
+                        <t t-if="company.partner_id.country_id">
+                            <span t-esc="', ' + company.partner_id.country_id.name"/>
+                        </t>
+                    </t>
+                </div>
+                <div class="hospital-report-meta">
+                    <t t-if="company.phone"><span t-esc="company.phone"/></t>
+                    <t t-if="company.email"><span class="ms-2" t-esc="company.email"/></t>
+                    <t t-if="company.website"><span class="ms-2" t-esc="company.website"/></t>
+                </div>
+            </div>
+            <div class="col-3 text-end">
+                <div class="hospital-report-badge">Medical Record</div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Main QWeb template rendered by the PDF report action. -->
+    <template id="patient_medical_report">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <t t-call="module_hospital.patient_medical_report_style"/>
+                    <t t-set="company" t-value="env.company"/>
+                    <t t-set="latest_appointment" t-value="doc.latest_appointment_id or (doc.appointment_ids and doc.appointment_ids[0]) or False"/>
+                    <div class="page hospital-report-page">
+                        <t t-call="module_hospital.patient_medical_report_header"/>
+
+                        <div class="card border-0 shadow-sm hospital-report-section mb-3">
+                            <div class="card-header hospital-section-header">Patient Information</div>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <table class="table table-sm table-bordered hospital-info-table mb-0">
+                                            <tbody>
+                                                <tr>
+                                                    <th>Patient ID</th>
+                                                    <td><span t-esc="doc.id"/></td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Patient Name</th>
+                                                    <td><span t-field="doc.name"/></td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Gender</th>
+                                                    <td><span t-field="doc.gender"/></td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Age</th>
+                                                    <td><span t-field="doc.age"/></td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Date of Birth</th>
+                                                    <td><span t-field="doc.date_of_birth"/></td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Blood Group</th>
+                                                    <td><span t-field="doc.blood_group"/></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <table class="table table-sm table-bordered hospital-info-table mb-0">
+                                            <tbody>
+                                                <tr>
+                                                    <th>Phone</th>
+                                                    <td><span t-field="doc.phone"/></td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Email</th>
+                                                    <td><span t-field="doc.email"/></td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Address</th>
+                                                    <td><span t-field="doc.address"/></td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Medical History</th>
+                                                    <td><span t-field="doc.medical_history"/></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card border-0 shadow-sm hospital-report-section mb-3">
+                            <div class="card-header hospital-section-header">Appointment Information</div>
+                            <div class="card-body">
+                                <table class="table table-bordered table-striped hospital-table mb-0">
+                                    <tbody>
+                                        <tr>
+                                            <th>Appointment ID</th>
+                                            <td><t t-if="latest_appointment"><span t-esc="latest_appointment.id"/></t></td>
+                                            <th>Appointment Date</th>
+                                            <td><t t-if="latest_appointment"><span t-field="latest_appointment.appointment_date"/></t></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Appointment Time</th>
+                                            <td><t t-if="latest_appointment"><span t-field="latest_appointment.appointment_time"/></t></td>
+                                            <th>Doctor Name</th>
+                                            <td><t t-if="latest_appointment and latest_appointment.doctor_id"><span t-esc="latest_appointment.doctor_id.name"/></t></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Department</th>
+                                            <td><t t-if="latest_appointment"><span t-field="latest_appointment.department"/></t></td>
+                                            <th>Priority</th>
+                                            <td><t t-if="latest_appointment"><span t-field="latest_appointment.priority"/></t></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Status</th>
+                                            <td colspan="3"><t t-if="latest_appointment"><span t-field="latest_appointment.state"/></t></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="card border-0 shadow-sm hospital-report-section mb-3">
+                            <div class="card-header hospital-section-header">Medical Information</div>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <div class="info-box">
+                                            <div class="label">Diagnosis</div>
+                                            <div class="value"><t t-if="latest_appointment"><span t-field="latest_appointment.diagnosis"/></t></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="info-box">
+                                            <div class="label">Symptoms</div>
+                                            <div class="value"><t t-if="latest_appointment"><span t-field="latest_appointment.symptoms"/></t></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="info-box">
+                                            <div class="label">Prescription</div>
+                                            <div class="value"><t t-if="latest_appointment"><span t-field="latest_appointment.prescription"/></t></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="info-box">
+                                            <div class="label">Doctor Notes</div>
+                                            <div class="value"><t t-if="latest_appointment"><span t-field="latest_appointment.doctor_notes"/></t></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card border-0 shadow-sm hospital-report-section mb-3">
+                            <div class="card-header hospital-section-header">Emergency Contact</div>
+                            <div class="card-body">
+                                <table class="table table-bordered hospital-table mb-0">
+                                    <tbody>
+                                        <tr>
+                                            <th>Guardian Name</th>
+                                            <td><span t-field="doc.emergency_contact_name"/></td>
+                                            <th>Relationship</th>
+                                            <td><span t-field="doc.emergency_contact_relationship"/></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Phone Number</th>
+                                            <td colspan="3"><span t-field="doc.emergency_contact_phone"/></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="card border-0 shadow-sm hospital-report-section mb-3">
+                            <div class="card-header hospital-section-header">Billing Information</div>
+                            <div class="card-body">
+                                <table class="table table-bordered table-striped hospital-table mb-0">
+                                    <tbody>
+                                        <tr>
+                                            <th>Consultation Fee</th>
+                                            <td><span t-field="doc.consultation_fee"/></td>
+                                            <th>Medicine Charges</th>
+                                            <td><span t-field="doc.medicine_charges"/></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Tax</th>
+                                            <td><span t-field="doc.tax_amount"/></td>
+                                            <th>Discount</th>
+                                            <td><span t-field="doc.discount_amount"/></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Grand Total</th>
+                                            <td colspan="3"><span t-field="doc.grand_total"/></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="row hospital-report-footer mt-4 pt-3 border-top border-2 border-secondary align-items-end">
+                            <div class="col-md-3">
+                                <div class="footer-label">Generated Date</div>
+                                <div class="footer-value"><span t-esc="report_generated_date"/></div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="footer-label">Generated Time</div>
+                                <div class="footer-value"><span t-esc="report_generated_time"/></div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="footer-label">Generated By</div>
+                                <div class="footer-value"><span t-esc="env.user.name"/></div>
+                            </div>
+                            <div class="col-md-3 text-end">
+                                <div class="footer-label">Page Number</div>
+                                <div class="footer-value"><span class="page"/></div>
+                            </div>
+                            <div class="col-6 mt-4">
+                                <div class="signature-line"></div>
+                                <div class="footer-label">Doctor Signature</div>
+                            </div>
+                            <div class="col-6 mt-4 text-end">
+                                <div class="signature-box">Hospital Stamp</div>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>
