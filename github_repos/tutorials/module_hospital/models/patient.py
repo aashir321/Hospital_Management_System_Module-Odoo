@@ -5,7 +5,7 @@ from odoo import api, fields, models  # pyright: ignore[reportMissingImports]
 
 class HospitalPatients(models.Model):
     _name = 'hospital.patients'
-    _inherit = ['mail.thread', 'mail.activity.mixin']
+    _inherit = ['mail.thread', 'mail.activity.mixin'] #chatter
     _description = 'Hospital Patients'
 
     name = fields.Char(string='Name', tracking=True)
@@ -23,6 +23,7 @@ class HospitalPatients(models.Model):
     date_of_birth = fields.Date(string='Date of Birth', tracking=True)
     gender = fields.Selection([('male', 'Male'), ('female', 'Female')], string='Gender', tracking=True)
     email = fields.Char(string='Email', tracking=True)
+    partner_id = fields.Many2one('res.partner', string='Customer', readonly=True, copy=False)
     phone = fields.Char(string='Phone', tracking=True)
     address = fields.Text(string='Address', tracking=True)
     medical_history = fields.Text(string='Medical History', tracking=True)
@@ -95,3 +96,16 @@ class HospitalPatients(models.Model):
                 'type' : 'rainbow_man',
             }
         }
+    
+    @api.model
+    def create(self,vals):
+        patient = super().create(vals) #create method is used to create a new record in the database. It takes a dictionary of field values as an argument and returns the newly created record.
+
+        partner = self.env['res.partner'].create({
+            "name" : patient.name,
+            "email": patient.email,
+            "phone": patient.phone,
+        })
+
+        patient.partner_id = partner.id
+        return patient

@@ -72,6 +72,7 @@
                                 <field name="date_of_birth"/>
                                 <field name="phone"/>
                                 <field name="email"/>
+                                <field name="partner_id"/>
                                 <field name="address"/>
                             </group>
                             <group string="Emergency and Billing">

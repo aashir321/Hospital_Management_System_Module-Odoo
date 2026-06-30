@@ -18,6 +18,12 @@ class HospitalAppointment(models.Model):
     diagnosis = fields.Text(string='Diagnosis', tracking=True)
     prescription = fields.Html(string = 'Prescription')
     doctor_notes = fields.Text(string='Doctor Notes', tracking=True)
+    line_ids = fields.One2many("hospital.appointment.line",
+                                 "appointment_id", #many2one field in appointment_line.py this will automatically connect this one2many with many2one
+                                 string="Services")
+    grand_total = fields.Float(string="Grand Total",
+                               compute="_compute_grand_total",
+                               store=True)
     priority = fields.Selection([
         ('0', 'Low'),
         ('1', 'Medium'),
@@ -33,3 +39,28 @@ class HospitalAppointment(models.Model):
     @api.onchange('patient_id')
     def _onchange_patient_id(self):
         self.email = self.patient_id.email
+
+    @api.depends("line_ids.subtotal")
+    def _compute_grand_total(self):
+        for appointment in self:
+            appointment.grand_total = sum(
+                appointment.line_ids.mapped('subtotal') #mapped is used to get the value of a field from a recordset. It returns a list of values for the specified field from all records in the recordset.
+            )
+    
+    def action_create_invoice(self):
+        invoice = self.env["account.move"].create({
+        "move_type": "out_invoice",
+        "partner_id": self.patient_id.partner_id.id,
+        "invoice_line_ids" : []        
+    })
+        for line in self.line_ids:
+            print(line.product_id.name)
+
+        return {
+        "type": "ir.actions.act_window",
+        "name": "Customer Invoice",
+        "res_model": "account.move",
+        "view_mode": "form",
+        "res_id": invoice.id,
+        "target": "current",
+    }

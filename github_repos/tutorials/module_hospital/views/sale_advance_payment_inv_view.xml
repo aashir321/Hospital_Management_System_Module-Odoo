@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="view_sale_advance_payment_inv_reference" model="ir.ui.view">
+        <field name="name">sale.advance.payment.inv.reference</field>
+        <field name="model">sale.advance.payment.inv</field>
+        <field name="inherit_id" ref="sale.view_sale_advance_payment_inv"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='deposit_taxes_id']" position="after">
+                <field name="reference"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
