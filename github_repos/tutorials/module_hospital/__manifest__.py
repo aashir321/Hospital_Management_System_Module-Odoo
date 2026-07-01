@@ -10,6 +10,7 @@
     'depends': ['base', 'mail' , 'sale', 'account'],
     'data': [
         'security/ir.model.access.csv',
+        'security/security.xml',
         'views/menu.xml',
         'views/doctor_view.xml',
         'views/patient_view.xml',
@@ -18,9 +19,11 @@
         'views/sale_order_inherit_view.xml',
         'views/account_move_view.xml',
         'views/sale_advance_payment_inv_view.xml',
+        'views/sale_order_approval_view.xml',
         'data/sequence.xml',
         'report/report.xml',
         'report/patient_report.xml',
         'report/report_style.xml',
+        'report/sale_order_report.xml',
     ]
 }

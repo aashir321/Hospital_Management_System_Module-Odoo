@@ -1,4 +1,6 @@
 from odoo import api, fields, models  # pyright: ignore[reportMissingImports]
+from odoo.exceptions import UserError #pyright: ignore[reportMissingImports]
+
 
 class HospitalAppointment(models.Model):
     _name = 'hospital.appointment'
@@ -24,6 +26,9 @@ class HospitalAppointment(models.Model):
     grand_total = fields.Float(string="Grand Total",
                                compute="_compute_grand_total",
                                store=True)
+    invoice_count = fields.Integer(
+        compute="_compute_invoice_count",
+    )
     priority = fields.Selection([
         ('0', 'Low'),
         ('1', 'Medium'),
@@ -49,18 +54,55 @@ class HospitalAppointment(models.Model):
     
     def action_create_invoice(self):
         invoice = self.env["account.move"].create({
-        "move_type": "out_invoice",
-        "partner_id": self.patient_id.partner_id.id,
-        "invoice_line_ids" : []        
-    })
+            "move_type": "out_invoice",
+            "partner_id": self.patient_id.partner_id.id,
+            "invoice_date": fields.Date.context_today(self),
+            "sale_reference": f"APT-{self.id}",
+            "payment_reference": f"APT-{self.id}",
+        })
+
         for line in self.line_ids:
-            print(line.product_id.name)
+            self.env["account.move.line"].create({
+                "move_id": invoice.id,
+                "product_id": line.product_id.id,
+                "quantity": line.quantity,
+                "price_unit": line.price_unit,
+                "name": line.product_id.name,
+            })
 
         return {
-        "type": "ir.actions.act_window",
-        "name": "Customer Invoice",
-        "res_model": "account.move",
-        "view_mode": "form",
-        "res_id": invoice.id,
-        "target": "current",
-    }
+            "type": "ir.actions.act_window",
+            "name": "Customer Invoice",
+            "res_model": "account.move",
+            "view_mode": "form",
+            "res_id": invoice.id,
+            "target": "current",
+        }
+
+    @api.depends("patient_id.partner_id")
+    def _compute_invoice_count(self):
+        for record in self:
+            if record.patient_id.partner_id:
+                record.invoice_count = self.env["account.move"].search_count([
+                ("partner_id", "=", record.patient_id.partner_id.id),
+                ("move_type", "=", "out_invoice"),
+            ])
+            else:
+                record.invoice_count = 0
+    
+    def action_view_patient_invoices(self):
+        self.ensure_one()
+
+        action = self.env.ref("account.action_move_out_invoice_type").read()[0]
+
+        action["name"] = "Patient Invoices"
+        action["domain"] = [
+            ("partner_id", "=", self.patient_id.partner_id.id),
+            ("move_type", "=", "out_invoice"),
+        ]
+        action["context"] = {
+            "default_partner_id": self.patient_id.partner_id.id,
+            "default_move_type": "out_invoice",
+        }
+
+        return action

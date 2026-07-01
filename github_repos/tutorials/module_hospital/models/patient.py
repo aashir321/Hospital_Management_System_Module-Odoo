@@ -2,6 +2,7 @@ from datetime import date, datetime
 
 from odoo import api, fields, models  # pyright: ignore[reportMissingImports]
 
+from odoo.exceptions import UserError  # pyright: ignore[reportMissingImports]
 
 class HospitalPatients(models.Model):
     _name = 'hospital.patients'
