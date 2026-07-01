@@ -110,3 +110,13 @@ class HospitalPatients(models.Model):
 
         patient.partner_id = partner.id
         return patient
+    
+    #excel sheet
+    def action_print_excel(self):
+        self.ensure_one()
+
+        return {
+            "type": "ir.actions.act_url",
+            "url": "/patient/excel/%s" % self.id,
+            "target": "self",
+        }
